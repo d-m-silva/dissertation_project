@@ -6,12 +6,12 @@ import json
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 sys.path.append(os.path.expanduser("~/federated-learning"))
 
-from config_backup import get_config, get_attack_config
+from config_exp import get_config
 import tensorflow as tf
 
 from federated.fed_learning_exp import FedLearning
 from federated.fed_attack import FedAttack
-from federated.feddata.adult_fl_loader import load_acs_local_data_old, load_acs_local_data
+from federated.feddata.adult_fl_loader import load_acs_local_data
 from federated.feddata.acs_data_states import ACSDataStatesBySize
 from model import model_adult
 from pathlib import Path
@@ -26,21 +26,13 @@ def parse_args():
     parser.add_argument("--batch-size", type=int, default=64, help="Batch size")
     parser.add_argument("--learning-rate", type=float, default=0.001, help="Learning rate")
     parser.add_argument("--clients-number", type=int, default=10, help="Number of clients")
-    parser.add_argument("--attack-type", type=str, default="SagFL", choices=["SagFL"], help="Type of Attack")
-    parser.add_argument("--attackers", type=str, default=["AK"], nargs='+',
-                        choices=["AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA", "HI", "ID", "IL", "IN",
-                                 "IA", "KS", "KY", "LA", "ME", "MD", "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV",
-                                 "NH", "NJ", "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC", "SD", "TN",
-                                 "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY"],
-                        help="State the name of the free-rider client")
     parser.add_argument("--output-dir", type=str, default="results", help="Directory to save results")
     parser.add_argument("--size-agg", type=int, default=10, help="Size of aggregation for FedPer")
-    parser.add_argument("--learning-rate-ascent", type=float, default=0.001, help="Learning rate for SagFL attack")
     parser.add_argument("--multithread", action='store_true', help="Use multithreading for client update")
     parser.add_argument('--client-number-agg', action='store_true',
                         help="Specify if the aggregation is made with the number of each client instead of data size")
-    parser.add_argument("--finetune_after_fl", action = 'store_true', help = "Finetune after FL")
-    parser.add_argument('--resume-round', type=int, default=0, help='Round from where training restarts')
+    parser.add_argument("--finetune_after_fl", action = 'store_true', help = "Fine-tune after FL")
+    parser.add_argument('--resume-round', type=int, default=0, help='Round from where fine-tuning restarts')
     parser.add_argument('--outlier_cap', type = float, default = 1, help='Percentage of outliers used, from around 0 to 1 (all)')
     args = parser.parse_args()
     return args
