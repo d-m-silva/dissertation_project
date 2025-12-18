@@ -7,7 +7,7 @@ dissertation_project/
 │
 ├── LICENSE
 ├── README.md (this file)
-├── requirements.txt 
+├── requirements.txt
 │
 └── federated-learning/
     ├── data/
@@ -23,21 +23,21 @@ dissertation_project/
     │   │   │       └── ...
     │   │   └── test_run_fl.py
     │   ├── config_exp.py
-    │   └── model.py        
+    │   └── model.py
     ├── federated/
     │   ├── client/
-    │   │   └── fed_client.py  
-    │   ├── server/ 
+    │   │   └── fed_client.py
+    │   ├── server/
     │   │   ├── fed_agg.py
     │   │   ├── fed_avg.py
     │   │   ├── fed_differencial_privacy.py
-    │   │   └── fed_per.py     
-    │   └── feddata/
-    │       ├── acs_data_states.py
-    │       ├── adult_fl_loader.py
-    │       └── sent140_loader_silo_exp.py
-    ├── config.py
-    └── fed_learning_exp.py   
+    │   │   └── fed_per.py
+    │   ├── feddata/
+    │   │   ├── acs_data_states.py
+    │   │   ├── adult_fl_loader.py
+    │   │   └── sent140_loader_silo_exp.py
+    │   ├── config.py
+    │   └── fed_learning_exp.py
 ```
 
    
