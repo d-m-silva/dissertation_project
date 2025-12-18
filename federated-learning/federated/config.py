@@ -29,9 +29,12 @@ class FederatedData:
     y_gen_test: Union[None, pd.DataFrame, np.array]
 
 
+"""
+### To be incorporated ###
+
 @dataclass
 class FedLearnOptions:
     multithreaded: bool = False
     round_to_start: int = 0
     snapshot_frequency: int = 5
-
+"""
