@@ -42,7 +42,7 @@ def load_adult_dummy(list_states: list[str] = None, year: str = '2021', horizon:
     return local_acs_data
 
 
-#### Global percentile estimation for PINCP #####
+#### Global percentile estimation for IQR method #####
 
 clients_number = 50
 clients_name = [state.name for state in ACSDataStatesBySize][:clients_number]
@@ -162,5 +162,5 @@ Q25_est = iterative_stochastic_estimation(
 
 error_iter = (Q25_est - Q25_global)
 
-#### Global quantile estimation for cosine similarity #####
+#### Global quantile estimation for CS method #####
 
