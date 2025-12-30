@@ -41,7 +41,7 @@ def clean_categorical_column(col):
     return col.apply(lambda c: str(int(float(c))) if pd.notnull(c) else c)
 
 
-def load_adult(list_states: list[str] = None, year: str = '2021', horizon: str = '1-Year', split: bool = True):
+def load_adult_dummy(list_states: list[str] = None, year: str = '2021', horizon: str = '1-Year', split: bool = True):
 
     """Load the ACS dataset."""
     # Download if necessary ACS data source for each state
@@ -81,7 +81,7 @@ def load_adult(list_states: list[str] = None, year: str = '2021', horizon: str =
 
 clients_number = 50
 clients_name = [state.name for state in ACSDataStatesBySize][:clients_number]
-data = load_adult(list_states=clients_name)
+data = load_adult_dummy(list_states=clients_name)
 
 # === 1. Feature specification
 
