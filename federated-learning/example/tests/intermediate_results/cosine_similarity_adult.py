@@ -37,9 +37,6 @@ class FrequencyEncoder(BaseEstimator, TransformerMixin):
         return X_copy
 
 
-def clean_categorical_column(col):
-    return col.apply(lambda c: str(int(float(c))) if pd.notnull(c) else c)
-
 
 def load_adult_dummy(list_states: list[str] = None, year: str = '2021', horizon: str = '1-Year', split: bool = True):
 
