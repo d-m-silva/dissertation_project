@@ -3,8 +3,6 @@ import numpy as np
 import sys
 import os
 import matplotlib.pyplot as plt
-from typing import Dict
-from functools import reduce
 
 sys.path.append(os.path.expanduser("~/federated-learning"))
 
