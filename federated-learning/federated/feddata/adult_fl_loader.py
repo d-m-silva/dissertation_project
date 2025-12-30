@@ -4,7 +4,6 @@ from folktables import ACSDataSource, ACSIncome
 from ..config import FederatedData
 from .acs_data_states import ACSDataStatesCode
 from typing import List
-from pathlib import Path
 
 import numpy as np
 import random
