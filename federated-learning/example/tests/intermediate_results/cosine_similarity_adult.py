@@ -90,7 +90,7 @@ binary_features = ['SEX']
 all_features = numerical_features + ordinal_features + frequency_features + one_hot_features + binary_features
 
 # === 2. Results path
-RESULTS_DIR = "dissertation_project/federated-learning/example/tests/intermediate_results"
+RESULTS_DIR = "federated-learning/example/tests/intermediate_results"
 os.makedirs(RESULTS_DIR, exist_ok=True)
 
 # === 3. Dictionary to store results
@@ -157,7 +157,7 @@ similarity_df = pd.concat(all_similarities_df, ignore_index=True)
 
 # Getting datasize to then order states by datasize, from biggest to smallest
 
-DATA_PATH = "dissertation_project/federated-learning/example/tests"
+DATA_PATH = "federated-learning/example/tests"
 state_sizes = os.path.join(DATA_PATH, "tests/intermediate_results/state_sizes.txt")
 data_sizes_dict = {}
 
