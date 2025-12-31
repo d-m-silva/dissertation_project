@@ -1,8 +1,5 @@
 import pandas as pd
-import matplotlib.pyplot as plt
 import numpy as np
-import math
-
 from sklearn.model_selection import train_test_split
 from federated.feddata import ACSDataStatesBySize, ACSDataStatesCode
 from folktables import ACSDataSource, ACSIncome
@@ -73,11 +70,9 @@ Q75_weighted = (state_q75 * state_counts).sum() / state_counts.sum()
 
 Q25_weighted = (state_q25 * state_counts).sum() / state_counts.sum()
 
-# Differences
+error_q75_pond = (Q75_weighted - Q75_global)/Q75_global
 
-diff_max_pond = (Q75_weighted - Q75_global)/Q75_global
-
-diff_min_pond = (Q25_weighted - Q25_global) #Q25_global is zero, absolute error is needed
+error_q25_pond = (Q25_weighted - Q25_global) #Q25_global is zero, absolute error is needed
 
 #2. Iterative stochastic estimation
 
@@ -152,7 +147,7 @@ Q75_est = iterative_stochastic_estimation(
 error_iter = ((Q75_est - Q75_global)/Q75_global)*100
 
 q = 0.25
-P_25_list = [group["PINCP"].dropna().quantile(q) for state, group in adult_data.groupby("State")]
+Q_25_list = [group["PINCP"].dropna().quantile(q) for state, group in adult_data.groupby("State")]
 
 Q25_est = iterative_stochastic_estimation(
     local_quantiles_dict = Q_25_list,
@@ -164,3 +159,87 @@ error_iter = (Q25_est - Q25_global)
 
 #### Global quantile estimation for CS method #####
 
+subset_cs_thr1_states = "federated-learning/example/tests/filtering_logs/subset_states_cosine_similarity_1_pct.txt"
+subset_cs_thr2_5_states = "federated-learning/example/tests/filtering_logssubset_states_cosine_similarity_2_5_pct.txt"
+
+state_sizes = "federated-learning/example/tests/intermediate_results/state_sizes.txt"
+
+with open(state_sizes, 'r') as f:
+    for line in f:
+        if ':' in line:
+            state, rest = line.strip().split(':')
+            rest = int(round(float(rest)))
+            data_size_dict[state.strip()] = rest
+
+total_size = sum(data_size_dict.values())
+
+def read_threshold_file(path):
+    """
+    Reads a threshold file and returns:
+    - global_threshold (float)
+    - state_thresholds (dict: state -> threshold)
+    """
+    state_thresholds = {}
+
+    with open(path, 'r') as f:
+       
+        first_line = f.readline().strip()
+        if "Global threshold" in first_line:
+            global_threshold = float(first_line.split(":")[1].strip())
+        else:
+            raise ValueError("Global threshold not found in first line.")
+
+        for line in f:
+            if ':' in line and 'state_threshold=' in line:
+                state, rest = line.strip().split(':', 1)
+                parts = [p.strip() for p in rest.split(',')]
+                for part in parts:
+                    if part.startswith('state_threshold='):
+                        state_thresholds[state.strip()] = float(part.split('=')[1])
+                        break
+
+    return global_threshold, state_thresholds
+
+
+P1_Global, subset_cs_thr1_dict = read_threshold_file(subset_cs_thr1_states)
+P2_5_Global, subset_cs_thr_2_5_dict = read_threshold_file(subset_cs_thr2_5_states)
+
+data_size_1_dict = {
+    st: (data_size_dict[st] * subset_cs_thr1_pct_removal_dict[st])
+    for st in data_size_dict
+}
+
+data_size_2_5_dict = {
+    st: (data_size_dict[st] * subset_cs_thr_2_5_pct_removal_dict[st])
+    for st in data_size_dict
+}
+
+#1. Weighted estimation 
+
+P1_weighted = sum(subset_cs_thr1_dict[st] * data_size_pct_dict[st] for st in subset_cs_thr1_dict) 
+P2_5_weighted = sum(subset_cs_thr_2_5_dict[st] * data_size_pct_dict[st] for st in subset_cs_thr_2_5_dict) 
+
+error_1_pond = (P1_weighted - P1_global) / P1_global 
+error_2_5_pond = (P2_5_weighted - P2_5_global) / P2_5_global
+
+#2. Iterative stochastic estimation
+
+#i. CS 1%
+
+P1_est = iterative_stochastic_estimation(
+    local_quantiles_dict = subset_cs_thr1_dict,
+    local_sizes_dict = data_size_1_dict,
+    max_iter=50
+)
+
+error_iter = ((P1_est - P1_Global)/P1_Global)*100
+
+#ii. CS 2.5%
+
+P2_5_est = iterative_stochastic_estimation(
+    local_quantiles_dict = subset_cs_thr_2_5_dict,
+    local_sizes_dict = data_size_2_5_dict,
+    max_iter=50
+)
+
+error_iter = ((P2_5_est - P2_5_Global)/P2_5_Global)*100
